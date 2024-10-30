@@ -1,0 +1,82 @@
+<!doctype>
+<html>
+	<head>
+		<script src="funciones.js"></script>
+	</head>
+	<body>
+		
+		<button>Pulsame</button>
+		<script>
+			
+			var contexto1;
+		var contexto2;
+
+         //////////////////////////////// CAPTURA DE PANTALLA //////////////////////////////
+        async function captureScreen() {
+				 try {																						// Intento hacer algo
+				 	 
+					  const stream = await navigator.mediaDevices.getDisplayMedia(
+					  	{ 
+					  		video: true 
+					  	}
+					  	);																						// Atrapo la captura de pantalla
+					  const video = document.createElement('video');							// Creo un vodeo
+					  video.srcObject = stream;														// el contenido del video es la captura de pantalla
+					  let lienzo1= document.createElement("canvas")								// Creo un lienzo
+					  contexto1 = lienzo1.getContext("2d")										// Creo un contexto
+					  	lienzo1.width = 1920																// Anchura del lienzo
+						lienzo1.height = 1080																// Altura del lienzo
+					document.body.appendChild(lienzo1);												// Lo añado al documento
+					
+					
+					let lienzo2= document.createElement("canvas")								// Creo un lienzo
+					  contexto2 = lienzo2.getContext("2d")										// Creo un contexto
+					  	lienzo2.width = 1920																// Anchura del lienzo
+						lienzo2.height = 100																// Altura del lienzo
+					document.body.appendChild(lienzo2);												// Lo añado al documento
+					  
+					  
+					  video.onloadedmetadata = function(){												// Cuando la captura de pantalla este teparada
+					  		video.play();																		// Pon el vido en marcha
+					  }
+					  document.body.appendChild(video);													// Añado el video al documento
+					  video.addEventListener('timeupdate', () => {									// Cada vez que el video se actualice
+						 	contexto1.drawImage(video,0,0)													// Refresca el canvas
+						 	
+					  });
+					  
+				 } catch (error) {
+					  console.error("Error al capturar la pantalla:", error);
+				 }
+				 
+			}
+
+			captureScreen();
+         //////////////////////////////// CAPTURA DE PANTALLA //////////////////////////////
+         
+         var temporizador = setTimeout("bucle()",5000)
+         var avance = 0;
+         function bucle(){
+         	let datos = contexto1.getImageData(0,0,1920,1080)
+         	let contador = 0;
+         	let r = 0;let g = 0;let b = 0;
+				for(let i = 0;i<datos.data.length;i+=4){
+					r += datos.data[i]
+					g += datos.data[i+1]
+					b += datos.data[i+2]
+					contador++;
+				}
+				r = Math.round(r/contador);
+				g = Math.round(g/contador);
+				b = Math.round(b/contador);
+				avance++;
+				contexto2.fillStyle = "rgb("+r+","+g+","+b+")"
+				contexto2.fillRect(avance,0,1,100)
+         	console.log("datos enviados")
+         	clearTimeout(temporizador)
+         	temporizador = setTimeout("bucle()",1000)
+         }
+        
+		</script>
+	</body>
+</html>
